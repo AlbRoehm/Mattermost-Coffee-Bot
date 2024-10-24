@@ -1,8 +1,7 @@
-import random
-
 from mattermostdriver import Driver
 from dotenv import dotenv_values
 from types import SimpleNamespace
+import random
 import json
 
 
@@ -27,6 +26,9 @@ async def respond_posted(mm: Driver, message):
     if post.user_id == 'qwrrotfuniyut8djj6e7wppypo':
         return
 
+    if channel_is_not_direct_message(mm, post.channel_id):
+        return
+
     match post.message:
         case 'hello':
             await hello_respond(mm, message_object.data.channel_display_name, post.channel_id)
@@ -34,6 +36,11 @@ async def respond_posted(mm: Driver, message):
             await coffee_respond(mm, post.channel_id)
         case 'help':
             await help_respond(mm, post.channel_id)
+
+
+def channel_is_not_direct_message(mm: Driver, channel_name):
+    channel_info = mm.channels.get_channel(channel_name)
+    return channel_info['type'] != 'D'
 
 
 async def help_respond(mm, channel_id):
@@ -45,7 +52,7 @@ async def help_respond(mm, channel_id):
                    "want? A **coffee**? or just say **hello**? Try either of those keywords and see what happens."})
 
 
-def coffee_respond(mm, channel_id):
+async def coffee_respond(mm, channel_id):
     mm.posts.create_post({
         'channel_id': channel_id,
         'message': "Hey, meatbag! You know what you should do? Call up @" + fetch_random_user(
@@ -77,7 +84,9 @@ def fetch_random_user(mm: Driver):
     town_square_user_ids = [user['user_id'] for user in town_square_users]
     users = mm.users.get_users_by_ids(options=town_square_user_ids)
     filtered_active_users = [user for user in users if
-                             (user.get('delete_at', None) == 0 and user.get('is_bot', None) != True)]
+                             (user.get('delete_at', None) == 0  # user not deleted
+                              and user.get('is_bot', None) != True  # user not a bot
+                              and user.get('id', None) != 'qwrrotfuniyut8djj6e7wppypo')]  # user not bender
     random_user = (random.choice(filtered_active_users))
     return random_user['username']
 
