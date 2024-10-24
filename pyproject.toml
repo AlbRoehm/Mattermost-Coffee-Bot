@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 mattermostdriver = "^7.3.2"
 python-dotenv = "^1.0.1"
+dataclasses-json = "^0.6.7"
 
 
 [build-system]

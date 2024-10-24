@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     town_square_users = mm.channels.get_channel_members('ysr5gcdy6jds8edzcxpcekem1c', params={'per_page': '500'})
     print('town_square members')
-    print("Number of users in Townsquare", len(town_square_users), town_square_users)
+    print("Number of Users in Town-Square", len(town_square_users), town_square_users)
 
     town_square_user_ids = [user['user_id'] for user in town_square_users]
     print('User IDs in Town Square:')
